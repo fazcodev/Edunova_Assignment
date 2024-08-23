@@ -2,6 +2,17 @@
 
 // Declare module for SVG imports
 declare module '*.svg' {
-  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  const content: string;
   export default content;
+}
+
+// Declare module for other image types if needed
+declare module '*.png' {
+  const value: string;
+  export default value;
+}
+
+declare module '*.jpg' {
+  const value: string;
+  export default value;
 }

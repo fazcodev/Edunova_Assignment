@@ -18,7 +18,7 @@ const editProfileSchema = z.object({
   email: z.string().email("Invalid email address"),
   role: z.string().min(1, "Role is required"),
   status: z.string().min(1, "Status is required"),
-  teams: z.string().nonempty("At least one team must be selected"),
+  teams: z.string().min(1, 'Atleast one team is required'),
 });
 type editProfileSchemaType = z.infer<typeof editProfileSchema>;
 
@@ -78,16 +78,15 @@ const EditProfileModal = ({
   };
 
   const handleRemoveTeam = (team: string) => {
-    setSelectedTeams(
-      selectedTeams
-        .split(",")
-        .filter((t) => t !== team)
-        .join(",")
-    );
+    console.log(team);
+    setSelectedTeams((prev) => {
+      const newTeams = prev.split(",").filter((t) => t !== team).join(",");
+      return newTeams
+    });
   };
 
   const handleFormSubmit: SubmitHandler<editProfileSchemaType> = (data) => {
-    if (user) {
+    if (user && data.email && data.name && data.role && data.status && data.teams) {
       modifyUser({
         ...user,
         email: data.email,
@@ -100,9 +99,12 @@ const EditProfileModal = ({
         status: data.status as "Active" | "Inactive",
         teams: data.teams,
       });
+      handleClose();
     }
   };
-
+  useEffect(() => {
+    console.log(selectedTeams);
+  }, [selectedTeams])
   return (
     <Modal open={open} onClose={handleClose}>
       <form
@@ -236,12 +238,11 @@ const EditProfileModal = ({
                 <input
                   type="text"
                   {...register("teams")}
+                  autoFocus = {true}
                   value={selectedTeams}
-                  className="invisible"
                 />
                 <div className="min-h-[45px] p-2 border border-neutral-300 border-b-gray-800 rounded-md flex justify-stretch gap-2">
                   <div
-                    {...register("teams")}
                     className="flex flex-wrap gap-2 grow items-center"
                   >
                     {selectedTeams.split(",").map((team) => (
@@ -322,6 +323,7 @@ const EditProfileModal = ({
         <div className="flex justify-end gap-4 px-6">
           <button
             type="button"
+            onClick={handleClose}
             className="bg-ligh_blue font-bold text-base text-gray-900 border-neutral-300 border px-3 py-2 rounded-md"
           >
             CANCEL
