@@ -1,9 +1,19 @@
-import { useState } from "react";
-import { search_icon, filter_icon, add_icon } from "../assets/assets";
-import UsersTable from "./UsersTable";
+import { useState} from "react";
+import { search_icon, filter_icon, add_icon } from "../../assets/assets";
+import UsersTable from "./UsersTable"
+import { useSearchParams } from "react-router-dom";
 
 const PeopleDirectory = () => {
   const [searchInput, setSearchInput] = useState<string>("");
+  const [_, setSearchParams] = useSearchParams();
+  const submitHandler = (e: any) => {
+    e.preventDefault();
+    const searchedString = e.target.search.value;
+    setSearchInput(searchedString);
+    setSearchParams({ search: searchedString });
+    
+  };
+
   return (
     <div className="flex-1 mt-5 mb-4 mr-6 border border-neutral-200 rounded-xl relative z-10 bg-white">
       <div className="flex items-center justify-between h-[4.3rem] border-neutral-200 border-b">
@@ -16,21 +26,19 @@ const PeopleDirectory = () => {
           </span>
         </div>
         <div className="flex gap-0.5 mr-2">
-          <div className="border border-neutral-200 border-b-gray-700 rounded-sm pl-4 pr-2 py-1 flex items-center">
+          <form className="border border-neutral-200 border-b-gray-700 rounded pl-4 pr-2 py-1 flex items-center" onSubmit={submitHandler}>
             <label htmlFor="search">
               <input
                 id="search"
                 type="search"
                 placeholder="Search"
                 className="outline-none placeholder:text-base placeholder-gray-400"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
               />
             </label>
             <button type="submit">
               <img src={search_icon} alt="search" />
             </button>
-          </div>
+          </form>
           <button className="p-2">
             <img src={filter_icon} alt="filter" />
           </button>

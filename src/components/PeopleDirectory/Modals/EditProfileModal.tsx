@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { User, modifyUser } from "./users_data";
+import { User, modifyUser } from "../users_data";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,7 +11,7 @@ import {
   closeGray_icon,
   reset_icon,
   trash_icon,
-} from "../assets/assets";
+} from "../../../assets/assets";
 
 // Zod schema for form validation
 const editProfileSchema = z.object({

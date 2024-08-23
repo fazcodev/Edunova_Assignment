@@ -1,6 +1,6 @@
 import Navbar from "./components/Navbar";
-import Overview from "./components/Overview";
-import PeopleDirectory from "./components/PeopleDirectory";
+import Overview from "./components/Overview/Overview";
+import PeopleDirectory from "./components/PeopleDirectory/PeopleDirectory";
 import ProfileHeader from "./components/ProfileHeader";
 
 import {

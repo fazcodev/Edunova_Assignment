@@ -1,6 +1,6 @@
 import { type SetStateAction, type Dispatch } from "react";
-import { User } from "./users_data.ts";
-import { arrowTilt_icon, close_icon } from "../assets/assets";
+import { User } from "./users_data.ts"
+import { arrowTilt_icon, close_icon } from "../../assets/assets.ts";
 
 const UserCard = ({ user, setSelectedUser: closeCard }: { user: User, setSelectedUser: Dispatch<SetStateAction<User|null>> }) => {
   return (

@@ -4,8 +4,7 @@ import {
   edit_icon,
   arrowUp_icon,
   arrowLeft_icon,
-} from "../assets/assets";
-import { Pagination } from "@mui/material";
+} from "../../assets/assets";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   PaginationState,
@@ -18,11 +17,12 @@ import {
   getFilteredRowModel,
   FilterFn,
 } from "@tanstack/react-table";
-
+import { Pagination } from "@mui/material";
 import { fetchData, User } from "./users_data";
 import UserCard from "./UserCard";
-import EditProfileModal from "./EditProfileModal";
-import DeleteModal from "./DeleteModal";
+import EditProfileModal from "./Modals/EditProfileModal";
+import DeleteModal from "./Modals/DeleteModal";
+import { useSearchParams } from "react-router-dom";
 
 function UsersTable({
   globalFilter,
@@ -42,7 +42,7 @@ function UsersTable({
     open: boolean;
   }>({ user: null, open: false });
   const closeDeleteModal = () => setOpenDeleteModal({user: null, open: false});
-
+  const [_, setSearchParams] = useSearchParams();
   const globalFilterFn: FilterFn<User> = (row, columnId, filterValue) => {
     if (columnId === "name") {
       return (
@@ -59,7 +59,6 @@ function UsersTable({
       .toLowerCase()
       .includes(filterValue.toLowerCase());
 
-    return false; // Default case for other data types
   };
 
   const columns = useMemo<ColumnDef<User>[]>(
@@ -72,10 +71,8 @@ function UsersTable({
             <div className="flex flex-col ml-3">
               <button
                 onClick={() =>
-                  setSorting((prev) => {
-                    if (prev.length == 0 || prev[0].id != "name") {
-                      return [{ id: "name", desc: false }];
-                    }
+                  setSorting(() => {
+                    setSearchParams({ sort: "name", order: "asc" })
                     return [{ id: "name", desc: false }];
                   })
                 }
@@ -84,10 +81,8 @@ function UsersTable({
               </button>
               <button
                 onClick={() =>
-                  setSorting((prev) => {
-                    if (prev.length == 0 || prev[0].id != "name") {
-                      return [{ id: "name", desc: true }];
-                    }
+                  setSorting(() => {
+                    setSearchParams({sort:"name", order: "desc"});
                     return [{ id: "name", desc: true }];
                   })
                 }
@@ -134,10 +129,8 @@ function UsersTable({
             <div className="flex flex-col ml-2">
               <button
                 onClick={() =>
-                  setSorting((prev) => {
-                    if (prev.length == 0 || prev[0].id != "status") {
-                      return [{ id: "status", desc: false }];
-                    }
+                  setSorting(() => {
+                    setSearchParams({ sort: "status", order: "asc" });
                     return [{ id: "status", desc: false }];
                   })
                 }
@@ -146,10 +139,8 @@ function UsersTable({
               </button>
               <button
                 onClick={() =>
-                  setSorting((prev) => {
-                    if (prev.length == 0 || prev[0].id != "status") {
-                      return [{ id: "status", desc: true }];
-                    }
+                  setSorting(() => {
+                    setSearchParams({ sort: "status", order: "desc" });
                     return [{ id: "status", desc: true }];
                   })
                 }

@@ -1,6 +1,6 @@
 import { Modal } from "@mui/material";
-import { User, deleteUser } from "./users_data";
-import { closeBlack_icon } from "../assets/assets";
+import { User, deleteUser } from "../users_data";
+import { closeBlack_icon } from "../../../assets/assets";
 import { useQueryClient } from "@tanstack/react-query";
 
 function DeleteModal({
