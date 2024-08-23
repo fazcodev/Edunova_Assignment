@@ -278,7 +278,7 @@ function UsersTable({
     rowCount: number;
   }
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: ["data", pagination],
     queryFn: () => fetchData(pagination),
     placeholderData: keepPreviousData,
@@ -387,7 +387,7 @@ function UsersTable({
           shape="rounded"
           hideNextButton
           hidePrevButton
-          onChange={(event, page) => table.setPageIndex(page - 1)}
+          onChange={(_, page) => table.setPageIndex(page - 1)}
           //   style={{zIndex: 1, position: "relative"}}
         />
         <button

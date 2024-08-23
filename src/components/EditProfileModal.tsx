@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { User,  modifyUser } from "./users_data";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +56,6 @@ const EditProfileModal = ({
     handleSubmit,
     setValue,
     formState: { errors },
-    reset,
   } = useForm<editProfileSchemaType>({
     resolver: zodResolver(editProfileSchema),
   });
