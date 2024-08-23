@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { User,  modifyUser } from "./users_data";
+import { useQueryClient } from "@tanstack/react-query";
+import { User, modifyUser } from "./users_data";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +19,7 @@ const editProfileSchema = z.object({
   email: z.string().email("Invalid email address"),
   role: z.string().min(1, "Role is required"),
   status: z.string().min(1, "Status is required"),
-  teams: z.string().min(1, 'Atleast one team is required'),
+  teams: z.string().min(1, "Atleast one team is required"),
 });
 type editProfileSchemaType = z.infer<typeof editProfileSchema>;
 
@@ -47,10 +48,7 @@ const EditProfileModal = ({
 }) => {
   const [selectedTeams, setSelectedTeams] = useState<string>(user?.teams || "");
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  useEffect(() => {
-    setSelectedTeams(user?.teams || "");
-  }, [user]);
-
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -61,31 +59,52 @@ const EditProfileModal = ({
   });
 
   useEffect(() => {
+    setValue("teams", selectedTeams);
+  }, [selectedTeams]);
+
+  useEffect(() => {
+    setSelectedTeams(user?.teams || "");
+  }, [user]);
+
+  useEffect(() => {
     if (user) {
       setValue("name", `${user?.name.firstName} ${user?.name.lastName}`);
-      setValue("email", user.email);
-      setValue("role", user.role);
-      setValue("status", user.status);
-      setValue("teams", selectedTeams);
+      setValue("email", user?.email);
+      setValue("role", user?.role);
+      setValue("status", user?.status);
+      setValue("teams", user?.teams);
     }
   }, [user, errors]);
 
   const handleSelectTeam = (team: string) => {
     if (!selectedTeams.includes(team)) {
-      setSelectedTeams((prev) => `${prev},${team}`);
+      setSelectedTeams((prev) => {
+        if (prev.length > 0) return prev + "," + team;
+        return team;
+      });
     }
   };
 
   const handleRemoveTeam = (team: string) => {
-    console.log(team);
+    // console.log(team);
     setSelectedTeams((prev) => {
-      const newTeams = prev.split(",").filter((t) => t !== team).join(",");
-      return newTeams
+      const newTeams = prev.split(",").filter((t) => t !== team);
+
+      return newTeams.join(",");
     });
   };
 
-  const handleFormSubmit: SubmitHandler<editProfileSchemaType> = (data) => {
-    if (user && data.email && data.name && data.role && data.status && data.teams) {
+  const handleFormSubmit: SubmitHandler<editProfileSchemaType> = async (
+    data
+  ) => {
+    if (
+      user &&
+      data.email &&
+      data.name &&
+      data.role &&
+      data.status &&
+      data.teams
+    ) {
       modifyUser({
         ...user,
         email: data.email,
@@ -98,12 +117,16 @@ const EditProfileModal = ({
         status: data.status as "Active" | "Inactive",
         teams: data.teams,
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["data"],
+        refetchType: "all",
+      });
       handleClose();
     }
   };
   useEffect(() => {
-    console.log(selectedTeams);
-  }, [selectedTeams])
+    // console.log(selectedTeams);
+  }, [selectedTeams]);
   return (
     <Modal open={open} onClose={handleClose}>
       <form
@@ -117,7 +140,7 @@ const EditProfileModal = ({
             <img
               src={user?.name.avatarURL}
               alt="User Avatar"
-              className="w-[6.2rem] h-[6.2rem] rounded-full border-neutral-400 border mx-auto mb-4"
+              className="w-[6.2rem] h-[6.2rem] rounded-full border-neutral-400 border mx-auto mb-4 object-cover object-center"
             />
           </div>
 
@@ -205,7 +228,7 @@ const EditProfileModal = ({
                   </select>
                   {errors.role && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.role.message?.toString()}
+                      {errors.role.message}
                     </p>
                   )}
                 </div>
@@ -222,7 +245,7 @@ const EditProfileModal = ({
                   </select>
                   {errors.status && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.status.message?.toString()}
+                      {errors.status.message}
                     </p>
                   )}
                 </div>
@@ -234,36 +257,36 @@ const EditProfileModal = ({
                 <label className="block font-normal text-base text-gray-700 mb-1">
                   Teams
                 </label>
-                <input
+                {/* <input
                   type="text"
                   {...register("teams")}
                   autoFocus = {true}
                   value={selectedTeams}
-                />
+                /> */}
                 <div className="min-h-[45px] p-2 border border-neutral-300 border-b-gray-800 rounded-md flex justify-stretch gap-2">
-                  <div
-                    className="flex flex-wrap gap-2 grow items-center"
-                  >
-                    {selectedTeams.split(",").map((team) => (
-                      <div
-                        key={team}
-                        className="h-7 border-neutral-300 border bg-light_orange text-dark_violet text-sm px-1 rounded-[4px] flex items-center gap-2"
-                      >
-                        {team}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTeam(team)}
-                          className="text-red-500"
+                  {selectedTeams.length > 0 && (
+                    <div className="flex flex-wrap gap-2 grow items-center">
+                      {selectedTeams.split(",").map((team) => (
+                        <div
+                          key={team}
+                          className="h-7 border-neutral-300 border bg-light_orange text-dark_violet text-sm px-1 rounded-[4px] flex items-center gap-2"
                         >
-                          <img
-                            src={closeBlack_icon}
-                            alt="Delete All"
-                            className="w-4 h-4"
-                          />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                          {team}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTeam(team)}
+                            className="text-red-500"
+                          >
+                            <img
+                              src={closeBlack_icon}
+                              alt="Delete All"
+                              className="w-4 h-4"
+                            />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex gap-2 mr-5">
                     <button
                       type="button"
@@ -329,7 +352,7 @@ const EditProfileModal = ({
           </button>
           <button
             type="submit"
-            disabled={Object.keys(errors).length > 0}
+            // disabled={Object.keys(errors).length > 0}
             className="bg-ligh_blue font-bold text-base text-gray-900 border-neutral-300 disabled:opacity-50 border px-3 py-2 rounded-md"
           >
             SAVE

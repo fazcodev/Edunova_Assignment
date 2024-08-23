@@ -70,7 +70,8 @@ const modifyUser = (user: User) => {
   fakeUsersData[index] = user;
 }
 const deleteUser = (user: User) => {
-  fakeUsersData.filter((u) => u._id !== user._id);
+  const index = fakeUsersData.findIndex((u) => u._id === user._id);
+  fakeUsersData.splice(index, 1);
 }
 const fetchData = async ({
   pageIndex,

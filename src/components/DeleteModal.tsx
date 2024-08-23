@@ -12,17 +12,15 @@ function DeleteModal({
   handleClose: () => void;
   user: User | null;
 }) {
-
-
-const queryClient = useQueryClient();
-  const handleDelete = async() => {
-    if (user){
-        await queryClient.invalidateQueries({
-            queryKey: ['data'],
-            refetchType: 'all'
-        });
-        deleteUser(user);
-        handleClose();
+  const queryClient = useQueryClient();
+  const handleDelete = async () => {
+    if (user) {
+      deleteUser(user);
+      await queryClient.invalidateQueries({
+        queryKey: ["data"],
+        refetchType: "all",
+      });
+      handleClose();
     }
   };
 
